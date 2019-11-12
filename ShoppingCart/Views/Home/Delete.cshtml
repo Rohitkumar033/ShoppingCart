@@ -1,0 +1,74 @@
+﻿@model ShoppingCart.Models.Product
+@{
+    ViewBag.Title = "Delete";
+}
+<title>Delete</title>
+@using (Html.BeginForm("Delete", "Home", FormMethod.Post))
+
+{
+    <div>
+        <h3 style="color:forestgreen;text-align:center;width:500px">Delete</h3>
+        <h4 style="color:red">Are you sure you want to delete this?Record once deleted can not be retrieved.</h4>
+
+        <table width="500px" cellpadding="5" cellspacing="5" border="1" style="border:  solid black;
+            border-collapse: collapse;">
+            <tr>
+                <td colspan="2" align="center">Product</td>
+            </tr>
+            <tr>
+                <td align="right">
+                    Product Id :
+                </td>
+                <td align="left">
+                    @Html.DisplayFor(model => model.ProductId)
+                    @Html.Hidden("Id", Model.ProductId)
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    Product Name :
+                </td>
+                <td align="left">
+                    @Html.DisplayFor(model => model.ProductName)
+                    @Html.Hidden("Id", Model.ProductId)
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    Price :
+                </td>
+                <td align="left">
+                    @Html.DisplayFor(model => model.Price)
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    Reorder Level:
+                </td>
+                <td align="left">
+                    @Html.DisplayFor(model => model.ReorderLevel)
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    Category :
+                </td>
+                <td align="left">
+                    @Html.DisplayFor(model => model.Category.CategoryName)
+                </td>
+            </tr>
+
+
+        </table>
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div style="text-align:center;width:500px" class="form-actions no-color">
+                <input type="submit" value="Delete" class="btn btn-primary" /> |
+                @*@Html.ActionLink("Back to List", "Products")*@
+                @Html.ActionLink("Back", "Products", "Home", new { @class = "btn btn-primary" })
+            </div>
+        }
+    </div>
+}  

@@ -1,0 +1,197 @@
+﻿@model List<ShoppingCart.Models.ProductWithCategoryVM>
+
+@{
+    ViewBag.Title = "Product List";
+    Layout = null;
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <style type="text/css">
+        .webGrid {
+            margin: 4px;
+            border-collapse: collapse;
+            width: 700px;
+            font-family: Tahoma;
+            font-size: small;
+        }
+
+        .grid-header {
+            background-color: #990000;
+            font-weight: bold;
+            color: White !important;
+        }
+
+        .webGrid th a {
+            color: White;
+            text-decoration: none;
+        }
+
+        .webGrid th, .webGrid td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+
+        .alt {
+            background-color: #F4EFEF;
+        }
+
+        .webGrid th a:hover {
+            text-decoration: underline;
+        }
+
+        .to-the-right {
+            text-align: right;
+        }
+        table tr td
+        {
+           padding-top:15px;
+        }
+    </style>
+</head>
+<body>
+
+    <center>
+
+        <h2>Custom Search for Product</h2>
+        @using (Html.BeginForm("Products", "Home", FormMethod.Get, new { @class = "Search-form" }))
+        {
+            <div id="txtBox">
+                @Html.Label("Search Products ")
+                <input type="text" name="q" />
+            </div>
+            <div id="radioList">
+                @Html.RadioButton("SearchType", "0")
+                @Html.Label("ID")
+                @Html.RadioButton("SearchType", "1", true)
+                @Html.Label("Product Name")
+                @Html.RadioButton("SearchType", "2")
+                @Html.Label("Category Name")
+            </div>
+            <div id="btnSearch">
+                <input type="submit" value="Search" id="btnSubmit" />
+            </div>
+        }
+        <br />
+        <div id="DivGrid">
+            @{
+                var grid = new WebGrid(source: Model, canPage: true, rowsPerPage: 10, defaultSort: "ProductId");
+                if (Model.Count() > 0)
+                {
+                    <div><strong> @ViewBag.SearchParameter</strong> | @grid.TotalRowCount @Html.Label("Record(s) found")</div>
+                    @grid.GetHtml(
+tableStyle: "webGrid",
+headerStyle: "grid-header",
+rowStyle: "gridRow",
+alternatingRowStyle: "alt",
+mode: WebGridPagerModes.All,
+firstText: "<< First",
+previousText: " < Previous",
+nextText: "Next >",
+lastText: "Last >>",
+caption: "Products",
+columns: grid.Columns(
+
+                            grid.Column("ProductId", "Product Id"),
+                            grid.Column("ProductName", "Product Name"),
+                            grid.Column("Price", "Price"),
+                            grid.Column("ReorderLevel", "Reorder Level"),
+                            grid.Column("CategoryName", "Category"),
+                            grid.Column(header: "Action", format: (item) =>
+                               {
+                                   var link = Html.ActionLink("Edit", "Edit", new { id = item.ProductId });
+                                   return link;
+                               }),
+
+                             grid.Column(header: "Action", format: (item) =>
+                               {
+                                    var link = Html.ActionLink("Delete", "Delete", new { id = item.ProductId });
+                                    return link;
+                               }),
+                             grid.Column(header: "Action", format: @<text>@Html.ActionLink("Detail", null, null, new { @onclick = "return GetSelectedRow(this);" })</text>)
+   ))
+                    <script type="text/javascript">
+                        function GetSelectedRow(link) {
+                            var row = link.parentNode.parentNode;
+                            var message = "Selected Product Detail";
+                            message += "\n\n Product Id: " + row.getElementsByTagName("TD")[0].innerHTML;
+                            message += "\n Product Name: " + row.getElementsByTagName("TD")[1].innerHTML;
+                            message += "\n Price: " + row.getElementsByTagName("TD")[2].innerHTML;
+                            message += "\n ReorderLevel: " + row.getElementsByTagName("TD")[3].innerHTML;
+                            message += "\n Category Name: " + row.getElementsByTagName("TD")[4].innerHTML;
+                            alert(message);
+                            return false;
+                        }
+
+                    </script>
+
+
+                }
+                else
+                {
+                    <hr />@Html.Label("No, Record(s) not found")<hr />
+                }
+            }
+
+        </div>
+    </center>
+    <div>
+        @using (Html.BeginForm("Insert", "Home", FormMethod.Post))
+        {
+            <center>
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th colspan="2" align="center" style="font-size:24px;padding-top:30px;padding-bottom:10px">Add Product</th>
+                    </tr>
+
+                    <tr>
+
+                        <td>@Html.Label("Enter Product Name:") </td>
+                        <td>@Html.TextBox("txtPName")</td>
+
+                    </tr>
+                    <tr>
+                        <td>@Html.Label("Select Category Type:")</td>
+
+                        <td>
+                            @Html.DropDownList("Categories", (IEnumerable<SelectListItem>)ViewBag.Categories, "Select Category")
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td>@Html.Label("Enter Product Price:")</td>
+                        <td>@Html.TextBox("txtPrice")</td>
+                    </tr>
+                    <tr>
+
+                        <td>@Html.Label("Enter  ReorderLevel:")</td>
+
+                        <td>@Html.TextBox("txtReorderLevel")</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td style="text-align: center"><input type="submit" value="Submit" /></td>
+                    </tr>
+                    <tr><td style="text-align: center;color:Red"><div style="color: Red">@ViewBag.Message</div></td></tr>
+                </table>
+            </center>
+        }
+
+    </div>
+    @if (@TempData["Message"] != null)
+    {
+        <script type="text/javascript">
+
+        window.onload = function () {
+            alert("@TempData["Message"]");
+        };
+        </script>
+    }
+</body>
+</html>
